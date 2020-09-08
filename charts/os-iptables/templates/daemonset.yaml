@@ -40,9 +40,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
-      enableServiceLinks: true
       hostNetwork: true
-      hostPID: true
       priorityClassName: system-node-critical
       nodeSelector:
         {{- toYaml . | nindent 8 }}

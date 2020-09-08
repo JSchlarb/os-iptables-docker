@@ -15,9 +15,23 @@ if [[ -z "${NODE_IP}" ]]; then
     exit 1
 fi
 
-set -x
 
-ip a add ${NODE_IP}/${NODE_IP_MASK} dev lo
-iptables -t nat -I POSTROUTING 1 -s ${POD_SUBNET} -j SNAT --to-source ${NODE_IP}
+if ip a | grep -q ${NODE_IP}/${NODE_IP_MASK}; then
+  echo "skipping"
+else
+  set -x
+  ip a add ${NODE_IP}/${NODE_IP_MASK} dev lo
+  { set +x; } 2>/dev/null
+fi
 
-pause
+if iptable-save | grep -q '-A POSTROUTING -s ${POD_SUBNET} -j SNAT --to-source ${NODE_IP}'; then
+  echo "rule already present ... skipping"
+else
+  set -x
+  iptables -t nat -I POSTROUTING 1 -s ${POD_SUBNET} -j SNAT --to-source ${NODE_IP}
+  { set +x; } 2>/dev/null
+fi
+
+
+# suppress warnings
+pause >/dev/null 2>&1

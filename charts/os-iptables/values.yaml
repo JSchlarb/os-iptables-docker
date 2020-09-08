@@ -27,10 +27,13 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 securityContext:
-  privileged: true
-#  runAsUser: 0
-#  runAsNonRoot: false
-#  allowPrivilegeEscalation: true
+  capabilities:
+    add:
+      - CAP_NET_ADMIN
+    drop:
+      - ALL
+   readOnlyRootFilesystem: false
+   runAsNonRoot: false
 
 resources:
    limits:

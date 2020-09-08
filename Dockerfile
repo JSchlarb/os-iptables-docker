@@ -23,4 +23,4 @@ COPY docker-entrypoint.sh /
 
 USER 0
 
-ENTRYPOINT ["/tini", "--", "/docker-entrypoint.sh"]
+ENTRYPOINT ["/tini", "-s", "--", "/docker-entrypoint.sh"]
