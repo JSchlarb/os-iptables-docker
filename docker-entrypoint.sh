@@ -24,7 +24,7 @@ else
   { set +x; } 2>/dev/null
 fi
 
-if iptable-save | grep -q '-A POSTROUTING -s ${POD_SUBNET} -j SNAT --to-source ${NODE_IP}'; then
+if iptables -C POSTROUTING -s ${POD_SUBNET} -j SNAT --to-source ${NODE_IP} ; then
   echo "rule already present ... skipping"
 else
   set -x
