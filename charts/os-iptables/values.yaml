@@ -32,8 +32,8 @@ securityContext:
       - CAP_NET_ADMIN
     drop:
       - ALL
-   readOnlyRootFilesystem: false
-   runAsNonRoot: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: false
 
 resources:
    limits:
