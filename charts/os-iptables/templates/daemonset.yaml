@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "os-iptables.fullname" . }}
+  labels:
+    {{- include "os-iptables.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "os-iptables.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "os-iptables.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "os-iptables.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_IP_MASK
+              value: {{ .Values.nodeIpMask | quote }}
+            - name: POD_SUBNET
+              value: {{ .Values.podSubnet | quote }}
+            - name: CUSTOMER_IP_ADDRESS_ANNOTATION
+              value: {{ .Values.nodeCustomerAnnotation | quote }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      enableServiceLinks: true
+      hostNetwork: true
+      hostPID: true
+      priorityClassName: system-node-critical
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
