@@ -39,9 +39,9 @@ spec:
               value: {{ .Values.nodeCustomerAnnotation | quote }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
       hostNetwork: true
       priorityClassName: system-node-critical
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

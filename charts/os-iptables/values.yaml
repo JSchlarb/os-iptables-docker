@@ -4,13 +4,13 @@
 
 image:
   repository: julez/os-iptables-docker
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-nodeCustomerAnnotation: ""
+nodeCustomerAnnotation: "networking.oncite.io/customer-ip"
 nodeIpMask: 32
 podSubnet: 10.128.0.0/14
 
