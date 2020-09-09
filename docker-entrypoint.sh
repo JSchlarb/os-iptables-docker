@@ -25,7 +25,7 @@ else
   { set +x; } 2>/dev/null
 fi
 
-if iptables -C POSTROUTING -s ${POD_SUBNET} ! -d ${POD_SUBNET} -j SNAT --to-source ${NODE_IP} > /dev/null 2>&1; then
+if iptables -t nat -C POSTROUTING -s ${POD_SUBNET} ! -d ${POD_SUBNET} -j SNAT --to-source ${NODE_IP} > /dev/null 2>&1; then
   echo "rule already present ... skipping"
 else
   set -x
