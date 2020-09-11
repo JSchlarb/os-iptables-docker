@@ -4,6 +4,13 @@ set -euo pipefail
 
 echo "Starting ... "
 
+: "${IPTABLES_OUT_INTERFACE:=ens2f+}"
+
+if [[ -z "${IPTABLES_OUT_INTERFACE+x}" ]]; then
+	echo "Variable IPTABLES_OUT_INTERFACE is empty. Must be of type iptables out-interface name e.g. ens2f+"
+	exit 1
+fi
+
 if [[ -z "${CUSTOMER_IP_ADDRESS_ANNOTATION+x}" ]]; then
     echo "Variable CUSTOMER_IP_ADDRESS_ANNOTATION is empty or not defined" >&2
     exit 1
@@ -25,11 +32,11 @@ else
   { set +x; } 2>/dev/null
 fi
 
-if iptables -t nat -C POSTROUTING -s ${POD_SUBNET} ! -d ${POD_SUBNET} -j SNAT --to-source ${NODE_IP} > /dev/null 2>&1; then
+if iptables -t nat -C POSTROUTING -s ${POD_SUBNET} ! -d ${POD_SUBNET} -o ${IPTABLES_OUT_INTERFACE} -j SNAT --to-source ${NODE_IP} > /dev/null 2>&1; then
   echo "rule already present ... skipping"
 else
   set -x
-  iptables -t nat -I POSTROUTING 1 -s ${POD_SUBNET} ! -d ${POD_SUBNET} -j SNAT --to-source ${NODE_IP}
+  iptables -t nat -I POSTROUTING 1 -s ${POD_SUBNET} ! -d ${POD_SUBNET} -o ${IPTABLES_OUT_INTERFACE} -j SNAT --to-source ${NODE_IP}
   { set +x; } 2>/dev/null
 fi
 
